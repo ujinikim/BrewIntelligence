@@ -1,4 +1,5 @@
-import { Coffee } from '@/utils/data';
+import { CoffeeReview } from '@/utils/supabase-data';
+import { calculateAnalytics } from '@/utils/analytics';
 import { TrendingUp, DollarSign, Star, Coffee as CoffeeIcon } from 'lucide-react';
 
 interface MetricCardProps {
@@ -6,54 +7,66 @@ interface MetricCardProps {
   value: string;
   subtext: string;
   icon: React.ReactNode;
+  variant?: 'dark' | 'light';
 }
 
-const MetricCard = ({ label, value, subtext, icon }: MetricCardProps) => (
-  <div className="bg-white p-6 rounded-lg border border-[#e5e5e5] shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
-    <div>
-      <p className="text-xs font-bold tracking-widest uppercase text-[#1F1815]/60">{label}</p>
-      <h3 className="text-3xl font-serif font-bold text-[#1F1815] mt-2">{value}</h3>
-      <p className="text-sm text-[#1F1815]/70 mt-1">{subtext}</p>
+const MetricCard = ({ label, value, subtext, icon, variant = 'light' }: MetricCardProps) => (
+  <div className={`group p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${
+    variant === 'dark' 
+      ? 'bg-stone-900 border-white/5 text-white shadow-xl' 
+      : 'bg-white border-stone-200/50 text-stone-900 shadow-sm'
+  }`}>
+    <div className="flex justify-between items-start mb-6">
+        <div className={`p-4 rounded-2xl transition-transform duration-500 group-hover:rotate-6 ${
+            variant === 'dark' ? 'bg-white/10 text-amber-500' : 'bg-primary/10 text-primary'
+        }`}>
+            {icon}
+        </div>
+        <div className={`w-2 h-2 rounded-full animate-pulse ${
+            variant === 'dark' ? 'bg-amber-500' : 'bg-primary'
+        }`} />
     </div>
-    <div className="p-3 bg-[#F6F5F3] rounded-full text-[#1F1815]">
-        {icon}
+    <div>
+      <p className={`text-[10px] font-bold tracking-[0.2em] uppercase mb-1 ${
+        variant === 'dark' ? 'text-stone-500' : 'text-stone-400'
+      }`}>{label}</p>
+      <h3 className="text-4xl font-serif font-bold tracking-tight mb-2">{value}</h3>
+      <p className={`text-xs font-medium uppercase tracking-widest ${
+        variant === 'dark' ? 'text-stone-400' : 'text-stone-500'
+      }`}>{subtext}</p>
     </div>
   </div>
 );
 
-export function KPICards({ data }: { data: Coffee[] }) {
-  const totalBeans = data.length;
-  const avgRating = (data.reduce((acc, curr) => acc + curr.rating, 0) / totalBeans).toFixed(1);
-  const avgPrice = (data.reduce((acc, curr) => acc + curr['100g_USD'], 0) / totalBeans).toFixed(2);
-  
-  // Find top rated
-  const topRated = [...data].sort((a, b) => b.rating - a.rating)[0];
+export function KPICards({ data, totalCount }: { data: CoffeeReview[], totalCount: number }) {
+  const stats = calculateAnalytics(data);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <MetricCard 
-        label="Total Beans Evaluated" 
-        value={totalBeans.toString()} 
-        subtext="Across 50+ origins"
-        icon={<CoffeeIcon size={20} />}
+        label="Global Library" 
+        value={totalCount.toString()} 
+        subtext="Expert Reviews"
+        icon={<CoffeeIcon size={24} />}
+        variant="dark"
       />
       <MetricCard 
-        label="Average Rating" 
-        value={avgRating} 
-        subtext="Global quality score"
-        icon={<Star size={20} />}
+        label="Quality Rating" 
+        value={stats.avgRating} 
+        subtext="Aggregated Score"
+        icon={<Star size={24} />}
       />
       <MetricCard 
-        label="Average Price (100g)" 
-        value={`$${avgPrice}`} 
-        subtext="USD Market Average"
-        icon={<DollarSign size={20} />}
+        label="Market Price" 
+        value={stats.avgPrice === "N/A" ? "N/A" : `$${stats.avgPrice}`} 
+        subtext="Avg per bag"
+        icon={<DollarSign size={24} />}
       />
       <MetricCard 
-        label="Top Rated Bean" 
-        value={topRated ? `${topRated.rating}/100` : 'N/A'} 
-        subtext={topRated?.name || 'N/A'}
-        icon={<TrendingUp size={20} />}
+        label="Highest Honored" 
+        value={stats.topRated?.rating ? stats.topRated.rating.toString() : "N/A"} 
+        subtext={stats.topRated?.title || "Evaluating..."} 
+        icon={<TrendingUp size={24} />}
       />
     </div>
   );
