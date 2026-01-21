@@ -18,3 +18,14 @@ web/.env.local
 .DS_Store
 server.log
 test_supabase.py
+
+# Config files that may contain local settings
+opencode.json
+
+# Scrape logs (can be large)
+data_pipeline/scrape_log.txt
+data_pipeline/*.log
+
+# Temp/debug files
+*.tmp
+*.bak
