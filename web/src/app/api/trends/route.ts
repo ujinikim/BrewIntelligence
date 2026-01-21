@@ -29,7 +29,7 @@ export async function GET() {
         const text = (r.review || '').toLowerCase();
         const words = text.replace(/[.,]/g, '').split(/\s+/);
         
-        words.forEach(w => {
+        words.forEach((w: string) => {
             if (w.length > 3 && !skipWords.includes(w)) {
                 keywords[w] = (keywords[w] || 0) + 1;
             }
