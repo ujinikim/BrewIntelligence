@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
-import { Coffee } from '@/utils/data';
+import { CoffeeReview } from '@/utils/supabase-data';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, Coffee as CoffeeIcon, DollarSign, Star, Search, X } from 'lucide-react';
+import { Loader2, Coffee as CoffeeIcon, MapPin, Star, Search, X, Flame, Sparkles } from 'lucide-react';
 import { DashboardShell } from '@/components/dashboard-shell';
+import { cn } from '@/utils/cn';
 
 const FLAVOR_TAGS = [
   { id: 'fruity', label: 'Fruity & Bright' },
@@ -15,14 +17,34 @@ const FLAVOR_TAGS = [
   { id: 'spicy', label: 'Spicy & Bold' },
 ];
 
-export default function ExplorerPage() {
-  const [results, setResults] = useState<Coffee[]>([]);
+function StatBar({ label, value }: { label: string; value?: number }) {
+  if (value === undefined || value === null) return null;
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex justify-between text-[8px] uppercase font-bold tracking-widest text-stone-400">
+        <span>{label}</span>
+        <span className="text-stone-900">{value}</span>
+      </div>
+      <div className="h-1 w-full bg-stone-100 rounded-full overflow-hidden">
+        <div 
+            className="h-full bg-primary rounded-full transition-all duration-1000 ease-out" 
+            style={{ width: `${(value / 10) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ExplorerContent() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+  
+  const [results, setResults] = useState<CoffeeReview[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
 
-  // Debounce the combined search state
   const searchState = { query, selectedFlavors };
   const debouncedSearch = useDebounce(searchState, 500);
 
@@ -40,7 +62,6 @@ export default function ExplorerPage() {
   };
 
   useEffect(() => {
-    // Only search if there's input
     if (!debouncedSearch.query && debouncedSearch.selectedFlavors.length === 0) {
       setResults([]);
       return;
@@ -69,51 +90,54 @@ export default function ExplorerPage() {
   }, [debouncedSearch]);
 
   return (
-    <DashboardShell>
-      <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-5xl mx-auto py-12 px-6">
         
         {/* Search Console */}
-        <div className="bg-white p-8 rounded-xl border border-[#E5E5E5] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-12 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#D4A373] via-[#1F1815] to-[#D4A373] opacity-20" />
+        <div className="glass p-12 rounded-[3rem] shadow-2xl border border-stone-200/50 mb-16 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-[80px] pointer-events-none" />
 
-            <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto text-center">
-                <h2 className="text-3xl font-serif font-bold text-[#1F1815]">Find Your Perfect Bean</h2>
+            <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto text-center relative z-10">
+                <div className="w-16 h-16 bg-stone-900 rounded-[1.5rem] flex items-center justify-center text-white mb-2 rotate-3 hover:rotate-0 transition-transform shadow-xl">
+                    <Search size={32} />
+                </div>
+                <h2 className="text-5xl font-serif font-bold text-stone-900 tracking-tight">AI Flavor Explorer</h2>
+                <p className="text-stone-500 font-light text-xl leading-relaxed">Describe the profile you desire, and our neural engine will match it against thousands of expert cuppings.</p>
                 
-                {/* Search Input */}
-                <div className="relative w-full">
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <Search className="text-[#1F1815]/30" size={20} />
+                <div className="relative w-full group mt-4">
+                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                        <Sparkles className="text-primary/40 group-focus-within:text-primary transition-colors" size={24} />
                     </div>
                     <input 
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Describe your dream cup (e.g., 'light roast with blueberry notes')..."
-                        className="w-full pl-12 pr-4 py-4 bg-[#F9F8F6] border border-[#E5E5E5] rounded-full text-lg text-[#1F1815] placeholder:text-[#1F1815]/30 focus:outline-none focus:ring-2 focus:ring-[#D4A373]/50 transition-all font-medium"
+                        placeholder="e.g., 'vibrant ethiopian with jasmine and lemon'..."
+                        className="w-full pl-16 pr-16 py-6 bg-white border border-stone-200 rounded-[2rem] text-xl text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all font-medium shadow-sm"
                     />
                     {query && (
                         <button 
                             onClick={() => setQuery('')}
-                            className="absolute inset-y-0 right-4 flex items-center text-[#1F1815]/30 hover:text-[#1F1815] transition-colors"
+                            className="absolute inset-y-0 right-6 flex items-center text-stone-300 hover:text-stone-900 transition-colors"
                         >
-                            <X size={18} />
+                            <X size={20} />
                         </button>
                     )}
                 </div>
 
-                {/* Flavor Tags */}
-                <div className="flex flex-wrap justify-center gap-2">
+                <div className="flex flex-wrap justify-center gap-3 mt-2">
                     {FLAVOR_TAGS.map(tag => {
                         const isSelected = selectedFlavors.includes(tag.id);
                         return (
                             <button
                                 key={tag.id}
                                 onClick={() => toggleFlavor(tag.id)}
-                                className={`px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all border ${
+                                className={cn(
+                                    "px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all border shadow-sm",
                                     isSelected 
-                                    ? 'bg-[#1F1815] text-white border-[#1F1815]' 
-                                    : 'bg-white text-[#1F1815]/60 border-[#E5E5E5] hover:border-[#D4A373] hover:text-[#1F1815]'
-                                }`}
+                                    ? "bg-stone-900 text-white border-stone-900 shadow-xl" 
+                                    : "bg-white text-stone-500 border-stone-200 hover:border-primary hover:text-primary hover:shadow-md"
+                                )}
                             >
                                 {tag.label}
                             </button>
@@ -123,83 +147,115 @@ export default function ExplorerPage() {
             </div>
 
             {loading && (
-                <div className="absolute top-4 right-4">
-                    <Loader2 className="animate-spin text-[#D4A373]" size={20} />
+                <div className="absolute top-8 right-8">
+                    <Loader2 className="animate-spin text-primary" size={28} />
                 </div>
             )}
         </div>
 
         {/* Results List */}
-        <div className="space-y-4">
-            {/* Empty State / Prompt */}
+        <div className="space-y-8">
             {results.length === 0 && !loading && !query && selectedFlavors.length === 0 && (
-                <div className="text-center py-20 opacity-50">
-                    <CoffeeIcon className="mx-auto mb-4 text-[#D4A373]" size={48} />
-                    <p className="text-lg font-serif">Start typing or select a flavor to explore.</p>
+                <div className="text-center py-32 opacity-20 group">
+                    <div className="relative inline-block">
+                        <CoffeeIcon className="mx-auto mb-8 text-stone-900 group-hover:scale-110 transition-transform duration-700" size={100} />
+                        <Sparkles className="absolute -top-4 -right-4 text-primary" size={32} />
+                    </div>
+                    <p className="text-3xl font-serif italic text-stone-900">Your discovery starts here.</p>
                 </div>
             )}
 
-             {/* No Results State */}
              {results.length === 0 && !loading && (query || selectedFlavors.length > 0) && (
-                <div className="text-center py-20 opacity-50">
-                    <p className="text-lg">No beans found matching your criteria.</p>
-                    <button onClick={handleReset} className="text-[#D4A373] hover:underline font-bold mt-2">Clear Search</button>
+                <div className="text-center py-24 glass rounded-[3rem] border-2 border-dashed border-stone-200 shadow-inner">
+                    <p className="text-2xl text-stone-400 font-serif mb-6">No beans matched that specific signature.</p>
+                    <button onClick={handleReset} className="bg-stone-900 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-stone-800 transition-all shadow-xl">Reset Explorer</button>
                 </div>
             )}
 
             {results.map((bean, i) => (
-                <div key={i} className="bg-white p-6 rounded-xl border border-[#e5e5e5] hover:border-[#D4A373]/50 hover:shadow-md transition-all group animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${i * 50}ms` }}>
-                    <div className="flex flex-col md:flex-row gap-6">
-                        {/* Left: Key Info */}
-                        <div className="md:w-1/4 flex flex-col gap-2 shrink-0">
-                             <div className="flex items-start justify-between">
-                                <span className={`text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider ${
-                                    bean.roast === 'Dark' ? 'bg-amber-950 text-amber-100' :
-                                    bean.roast === 'Medium-Dark' ? 'bg-amber-900 text-amber-100' :
-                                    bean.roast === 'Medium' ? 'bg-amber-700 text-amber-100' :
-                                    'bg-amber-100 text-amber-900'
-                                }`}>
-                                    {bean.roast}
-                                </span>
-                                {(bean as any).similarity && (
-                                     <span className="text-xs font-mono text-green-600 bg-green-50 px-2 py-1 rounded-full" title="AI Confidence Score">
-                                        {((bean as any).similarity * 100).toFixed(0)}% Match
-                                     </span>
-                                )}
-                             </div>
-                             <h3 className="font-serif font-bold text-xl leading-tight group-hover:text-[#D4A373] transition-colors">{bean.name}</h3>
-                             <p className="text-sm font-medium text-[#1F1815]/60">{bean.roaster}</p>
-                             <div className="flex items-center gap-4 mt-auto pt-4">
-                                <div className="flex items-center gap-1 font-bold text-[#1F1815]">
-                                    <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                                    {bean.rating}
-                                </div>
-                                <div className="flex items-center gap-1 font-medium text-[#1F1815]/60">
-                                    <DollarSign size={14} />
-                                    {bean['100g_USD'].toFixed(2)}/100g
-                                </div>
-                             </div>
-                        </div>
+                <div key={bean.id} className="group glass bg-white p-10 rounded-[3rem] hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] transition-all flex flex-col md:flex-row gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${i * 100}ms` }}>
+                    {/* Visual Side */}
+                    <div className="md:w-1/4 flex flex-col gap-6">
+                         <div className="flex items-center justify-between">
+                            <div className="bg-stone-900 text-white font-serif font-bold w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-2xl shadow-2xl group-hover:rotate-6 transition-transform">
+                                {bean.rating}
+                            </div>
+                            {(bean as any).similarity && (
+                                 <div className="flex flex-col items-end">
+                                     <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Match</span>
+                                     <div className="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20">
+                                         <span className="text-sm font-mono font-bold text-amber-600">
+                                            {((bean as any).similarity * 100).toFixed(0)}%
+                                         </span>
+                                     </div>
+                                 </div>
+                            )}
+                         </div>
+                         
+                         <div>
+                            <h3 className="font-serif font-bold text-3xl leading-tight group-hover:text-primary transition-colors mb-2 tracking-tight">{bean.title}</h3>
+                            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em]">{bean.roaster}</p>
+                         </div>
 
-                        {/* Right: Description */}
-                        <div className="md:w-3/4 border-l border-[#f0f0f0] md:pl-6 pt-4 md:pt-0">
-                                "{bean.review}"
-                             
-                             <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="text-xs font-bold text-[#1F1815]/40 uppercase tracking-widest mr-2 py-1">Origin:</span>
-                                {bean.origin.split(',').map((o, idx) => (
-                                    <span key={idx} className="text-xs bg-[#F6F5F3] px-2 py-1 rounded-md text-[#1F1815]/70">
-                                        {o.trim()}
-                                    </span>
-                                ))}
-                             </div>
+                         <div className="space-y-3 pt-6 border-t border-stone-100">
+                            <div className="flex items-center gap-3 text-xs font-bold text-stone-700 bg-stone-50 px-3 py-2 rounded-xl border border-stone-100">
+                                <Flame size={14} className="text-amber-500" />
+                                {bean.roast_level || 'Medium'}
+                            </div>
+                            <div className="flex items-center gap-3 text-xs font-bold text-stone-700 bg-stone-50 px-3 py-2 rounded-xl border border-stone-100">
+                                <MapPin size={14} className="text-primary" />
+                                <span className="truncate">{bean.origin || bean.roaster_location || 'Unknown Origin'}</span>
+                            </div>
+                         </div>
+                    </div>
+
+                    {/* Stats Center */}
+                    <div className="md:w-1/4 flex flex-col gap-5 justify-center border-x border-stone-100 px-10">
+                        <StatBar label="Aroma" value={bean.aroma} />
+                        <StatBar label="Acidity" value={bean.acidity} />
+                        <StatBar label="Body" value={bean.body} />
+                        <StatBar label="Flavor" value={bean.flavor} />
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="md:w-2/4 flex flex-col justify-between">
+                        <div className="relative">
+                            <div className="absolute -top-4 -left-4 opacity-5">
+                                <CoffeeIcon size={64} />
+                            </div>
+                            <p className="text-stone-600 italic leading-relaxed text-xl mb-8 font-serif relative z-10">
+                                "{bean.review || bean.blind_assessment}"
+                            </p>
+                        </div>
+                        
+                        <div className="flex items-center justify-between mt-auto pt-8 border-t border-stone-50">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Market Price</span>
+                                <span className="text-2xl font-bold text-stone-900 tracking-tight">{bean.price || 'Price N/A'}</span>
+                            </div>
+                            <a 
+                                href={bean.url} 
+                                target="_blank" 
+                                className="px-8 py-4 bg-stone-50 text-stone-900 rounded-[1.2rem] text-sm font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-all border border-stone-200 shadow-sm"
+                            >
+                                Full Review
+                            </a>
                         </div>
                     </div>
                 </div>
             ))}
         </div>
 
-      </div>
+    </div>
+  );
+}
+
+export default function ExplorerPage() {
+  return (
+    <DashboardShell>
+      <Suspense fallback={<div className="p-32 text-center flex flex-col items-center gap-6"><Loader2 className="animate-spin text-primary" size={64} /><p className="font-serif text-2xl italic text-stone-400 animate-pulse">Initializing Neural Engine...</p></div>}>
+          <ExplorerContent />
+      </Suspense>
     </DashboardShell>
   );
 }

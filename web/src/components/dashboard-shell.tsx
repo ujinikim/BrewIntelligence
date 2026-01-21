@@ -1,54 +1,97 @@
 'use client';
 
-import { Coffee } from 'lucide-react';
+import { Coffee, Search, Database, Beaker, Map } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/utils/cn';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  const navItems = [
+    { label: 'Dashboard', href: '/', icon: Map },
+    { label: 'Reviews', href: '/reviews', icon: Database },
+    { label: 'AI Explorer', href: '/explorer', icon: Search },
+    { label: 'Alchemist Lab', href: '/alchemist', icon: Beaker },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F6F5F3] font-sans text-[#1F1815]">
-      {/* Navigation / Header - Stumptown 'Warm Editorial' Theme */}
-      <header className="sticky top-0 z-10 bg-[#F6F5F3]/90 backdrop-blur-md border-b border-[#e5e5e5]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Coffee className="text-[#1F1815] h-6 w-6" />
-              <span className="font-serif font-bold text-2xl text-[#1F1815] tracking-tight">
+    <div className="min-h-screen bg-[#FDFBF7] text-[#1F1815]">
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[30%] h-[30%] bg-accent/5 blur-[100px] rounded-full" />
+      </div>
+
+      {/* Modern Top Header */}
+      <header className="sticky top-0 z-50 glass border-b border-stone-200/50 h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex justify-between items-center h-full">
+            {/* Logo */}
+            <Link href="/" className="group flex items-center gap-3 transition-transform active:scale-95">
+              <div className="bg-stone-800 p-2 rounded-xl text-white group-hover:rotate-12 transition-transform">
+                <Coffee size={24} />
+              </div>
+              <span className="font-serif font-bold text-2xl tracking-tighter text-gradient">
                 Brew<span className="font-light">Intelligence</span>
               </span>
             </Link>
-            <div className="flex items-center gap-8">
-               <Link 
-                 href="/" 
-                 className={`text-sm font-medium tracking-wide uppercase transition-colors ${
-                   pathname === '/' ? 'text-[#1F1815] font-bold' : 'text-[#1F1815]/60 hover:text-[#1F1815]'
-                 }`}
-               >
-                 Dashboard
-               </Link>
-               <Link 
-                 href="/explorer" 
-                 className={`text-sm font-medium tracking-wide uppercase transition-colors ${
-                   pathname === '/explorer' ? 'text-[#D4A373] font-bold' : 'text-[#1F1815]/60 hover:text-[#D4A373]'
-                 }`}
-               >
-                 Explorer
-               </Link>
-              <button className="bg-[#1F1815] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-black transition-colors hidden md:block">
-                v1.0.0
-              </button>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-sm font-bold tracking-tight transition-all relative overflow-hidden group",
+                      isActive 
+                        ? "text-[#1F1815] bg-stone-100/80 shadow-sm" 
+                        : "text-stone-500 hover:text-[#1F1815] hover:bg-stone-100/50"
+                    )}
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                        <item.icon size={16} className={cn("transition-colors", isActive ? "text-primary" : "text-stone-400 group-hover:text-primary")} />
+                        {item.label}
+                    </span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Version Badge */}
+            <div className="flex items-center gap-4">
+               <span className="px-3 py-1 bg-stone-100 text-stone-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-stone-200/50">
+                 Alpha v1.2.0
+               </span>
             </div>
           </div>
         </div>
       </header>
 
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+      {/* Main Content Area */}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="page-enter">
+            {children}
+        </div>
       </main>
+
+      {/* Simple Footer */}
+      <footer className="relative z-10 py-12 border-t border-stone-200/50 mt-20">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+              <p className="text-xs font-bold text-stone-400 uppercase tracking-[0.4em]">
+                  The Future of Coffee Intelligence
+              </p>
+              <p className="mt-4 text-sm text-stone-500">
+                  © 2026 BrewIntelligence. Powered by AI and Specialty Passion.
+              </p>
+          </div>
+      </footer>
     </div>
   );
 }

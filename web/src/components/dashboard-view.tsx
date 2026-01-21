@@ -1,93 +1,67 @@
 'use client';
 
-import { useState } from 'react';
-import { Coffee } from '@/utils/data';
+import { CoffeeReview } from '@/utils/supabase-data';
 import { KPICards } from '@/components/kpi-cards';
 import { PriceChart } from '@/components/price-chart';
 import { HiddenGems } from '@/components/hidden-gems';
+import { TrendCard } from '@/components/trend-card';
+import { CoffeeGrid } from '@/components/coffee-grid';
+import { DashboardHero } from '@/components/dashboard-hero';
+import { Sparkles, BarChart3, Clock } from 'lucide-react';
 
-import { CoffeeMap } from '@/components/coffee-map';
-import { LayoutGrid, Map as MapIcon, Search } from 'lucide-react';
-
-export function DashboardView({ data }: { data: Coffee[] }) {
-  const [activeTab, setActiveTab] = useState<'analysis' | 'map'>('analysis');
-
+export function DashboardView({ data, totalCount }: { data: CoffeeReview[], totalCount: number }) {
   return (
-    <>
-      <div className="flex items-center gap-4 mb-8">
-        <div className="flex bg-[#F6F5F3] p-1 rounded-lg">
-            <button
-                onClick={() => setActiveTab('analysis')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                    activeTab === 'analysis'
-                        ? 'bg-white text-[#1F1815] shadow-sm'
-                        : 'text-[#1F1815]/50 hover:text-[#1F1815]/70'
-                }`}
-            >
-                <LayoutGrid size={16} />
-                Market Analysis
-            </button>
-            <button
-                onClick={() => setActiveTab('map')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-bold transition-all ${
-                    activeTab === 'map'
-                        ? 'bg-white text-[#1F1815] shadow-sm'
-                        : 'text-[#1F1815]/50 hover:text-[#1F1815]/70'
-                }`}
-            >
-                <MapIcon size={16} />
-                Origin Map
-            </button>
-        </div>
-      </div>
+    <div className="space-y-16">
+        <DashboardHero />
 
-      {activeTab === 'analysis' ? (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {/* Hero / CTA for Explorer */}
-            <div className="bg-[#1F1815] text-[#FDFBF7] p-8 rounded-lg mb-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
-                <div>
-                    <h2 className="text-2xl font-serif font-bold mb-2">Find your perfect coffee.</h2>
-                    <p className="text-[#FDFBF7]/80 max-w-md">
-                        Use our AI-powered Semantic Search to find beans by flavor, vibe, or roast level.
-                    </p>
+        <section>
+            <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <BarChart3 size={20} />
                 </div>
-                <a 
-                    href="/explorer" 
-                    className="bg-[#D4A373] text-white px-6 py-3 rounded-md font-bold hover:bg-[#C39363] transition-colors flex items-center gap-2 shrink-0"
-                >
-                    <Search size={20} />
-                    Open Flavor Explorer
-                </a>
+                <div>
+                    <h2 className="text-3xl font-serif font-bold tracking-tight">Market Analytics</h2>
+                    <p className="text-stone-500 text-sm font-medium uppercase tracking-widest">Real-time data from {totalCount} reviews</p>
+                </div>
             </div>
-
-            <KPICards data={data} />
+            <KPICards data={data} totalCount={totalCount} />
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
-                <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12">
+                <div className="lg:col-span-2 glass rounded-[2.5rem] p-1 shadow-sm border border-stone-200/50">
                     <PriceChart data={data} />
                 </div>
-                <div className="bg-white p-8 rounded-lg border border-[#e5e5e5] shadow-sm h-fit">
-                    <h3 className="text-xl font-serif font-bold text-[#1F1815] mb-6 border-b border-[#f0f0f0] pb-4">Quick Insights</h3>
-                    <ul className="space-y-6">
-                        <li className="flex flex-col gap-1 text-sm text-[#1F1815]/80">
-                            <span className="font-bold text-[#1F1815] uppercase tracking-wider text-xs">Price Correlation</span>
-                            <span>Weak positive (~0.26). Higher price doesn't guarantee higher quality.</span>
-                        </li>
-                        <li className="flex flex-col gap-1 text-sm text-[#1F1815]/80">
-                            <span className="font-bold text-[#1F1815] uppercase tracking-wider text-xs">Value Picks</span>
-                            <span>Look for beans in the bottom-right of the chart (Low Price, High Rating).</span>
-                        </li>
-                    </ul>
-
-                    <HiddenGems data={data} />
+                <div className="flex flex-col gap-8">
+                    <TrendCard />
+                    <div className="glass p-10 rounded-[2.5rem] shadow-sm border border-stone-200/50 h-fit relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+                        <div className="flex items-center gap-2 mb-8">
+                            <Sparkles size={16} className="text-amber-500" />
+                            <h3 className="text-xs font-bold text-stone-400 uppercase tracking-[0.2em]">Quick Insights</h3>
+                        </div>
+                        <HiddenGems data={data} />
+                    </div>
                 </div>
             </div>
-        </div>
-      ) : (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <CoffeeMap data={data} />
-        </div>
-      )}
-    </>
+        </section>
+
+        <section className="pt-16 border-t border-stone-200/50">
+            <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-stone-900 flex items-center justify-center text-white">
+                        <Clock size={20} />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-serif font-bold tracking-tight">Recent Additions</h2>
+                        <p className="text-stone-500 text-sm font-medium uppercase tracking-widest">The latest expert cuppings</p>
+                    </div>
+                </div>
+                <a href="/reviews" className="text-sm font-bold text-primary hover:text-primary-dark transition-colors uppercase tracking-widest flex items-center gap-2">
+                    View full archive
+                    <div className="w-6 h-px bg-primary" />
+                </a>
+            </div>
+            <CoffeeGrid data={data.slice(0, 6)} /> 
+        </section>
+    </div>
   );
 }

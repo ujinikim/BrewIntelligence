@@ -5,7 +5,6 @@ create extension if not exists vector;
 create table reviews (
   id bigint primary key generated always as identity,
   title text not null,
-  slug text, -- SEO friendly definition
   roaster text,
   roaster_location text,
   roast_level text,
@@ -24,6 +23,9 @@ create table reviews (
   
   blind_assessment text,
   notes text,
+  bottom_line text,
+  with_milk text,
+  raw_content text,  -- Trimmed HTML from .entry-content for re-parsing
   
   -- 384 dimensions matching all-MiniLM-L6-v2 model
   embedding vector(384),
