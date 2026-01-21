@@ -98,7 +98,7 @@ export function PriceChart({ data }: { data: CoffeeReview[] }) {
                 <Cell 
                     key={`cell-${index}`} 
                     fill={entry.value_score > 5 ? '#d97706' : '#1F1815'}
-                    className="transition-all duration-500 cursor-pointer hover:scale-125"
+                    className="cursor-pointer"
                     strokeWidth={entry.value_score > 5 ? 2 : 0}
                     stroke="rgba(245,158,11,0.3)"
                 />
