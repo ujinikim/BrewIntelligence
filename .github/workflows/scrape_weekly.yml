@@ -26,7 +26,7 @@ jobs:
         pip install -r data_pipeline/requirements.txt
         
     - name: Fetch Latest Sitemap
-      run: python data_pipeline/fetch_sitemap.py
+      run: python data_pipeline/scripts/fetch_sitemap.py
       
     - name: Scrape New Reviews Only
       env:
@@ -34,4 +34,12 @@ jobs:
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       run: |
         # Only scrape reviews not already in database
-        python data_pipeline/scrape_and_embed.py --limit 200 --skip-existing
+        python data_pipeline/scripts/scrape_and_embed.py --limit 200 --skip-existing
+
+    - name: Populate Normalized Columns
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: |
+        # Populate country, price_usd, review_year, roast_category for new entries
+        python data_pipeline/scripts/migrate_clean.py
