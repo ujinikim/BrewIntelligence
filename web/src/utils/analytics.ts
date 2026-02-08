@@ -20,25 +20,24 @@ export const calculateAnalytics = (data: CoffeeReview[]) => {
     };
   }
 
-  let totalRating = 0;
-  let totalPrice = 0;
-  let validPriceCount = 0;
+  // Calculate average rating (only specialty coffees 80+)
+  const specialtyBeans = data.filter(b => b.rating && b.rating >= 80);
+  const avgRating = specialtyBeans.length > 0
+    ? (specialtyBeans.reduce((sum, b) => sum + (b.rating || 0), 0) / specialtyBeans.length).toFixed(1)
+    : "0.0";
+
+  // Calculate average price using price_usd (all currencies converted to USD)
+  const pricesUSD = data
+    .filter(b => b.price_usd && b.price_usd > 0)
+    .map(b => b.price_usd!);
   
+  const avgPrice = pricesUSD.length > 0
+    ? (pricesUSD.reduce((a, b) => a + b, 0) / pricesUSD.length).toFixed(2)
+    : "N/A";
+
   // Find top rated
   const sortedByRating = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0));
   const topRated = sortedByRating[0];
-
-  data.forEach(bean => {
-    totalRating += (bean.rating || 0);
-    const p = parsePrice(bean.price);
-    if (p > 0) {
-      totalPrice += p;
-      validPriceCount++;
-    }
-  });
-
-  const avgRating = (totalRating / totalBeans).toFixed(1);
-  const avgPrice = validPriceCount > 0 ? (totalPrice / validPriceCount).toFixed(2) : "N/A";
 
   return {
     totalBeans,

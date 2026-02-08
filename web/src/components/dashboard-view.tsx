@@ -2,12 +2,12 @@
 
 import { CoffeeReview } from '@/utils/supabase-data';
 import { KPICards } from '@/components/kpi-cards';
-import { PriceChart } from '@/components/price-chart';
-import { HiddenGems } from '@/components/hidden-gems';
-import { TrendCard } from '@/components/trend-card';
+import { OriginsLeaderboard } from '@/components/origins-leaderboard';
+import { QuickStats } from '@/components/quick-stats';
+import { RecentHighScorers } from '@/components/recent-high-scorers';
 import { CoffeeGrid } from '@/components/coffee-grid';
 import { DashboardHero } from '@/components/dashboard-hero';
-import { Sparkles, BarChart3, Clock } from 'lucide-react';
+import { BarChart3, Clock } from 'lucide-react';
 
 export function DashboardView({ data, totalCount }: { data: CoffeeReview[], totalCount: number }) {
   return (
@@ -26,20 +26,11 @@ export function DashboardView({ data, totalCount }: { data: CoffeeReview[], tota
             </div>
             <KPICards data={data} totalCount={totalCount} />
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12">
-                <div className="lg:col-span-2 glass rounded-[2.5rem] p-1 shadow-sm border border-stone-200/50">
-                    <PriceChart data={data} />
-                </div>
-                <div className="flex flex-col gap-8">
-                    <TrendCard />
-                    <div className="glass p-10 rounded-[2.5rem] shadow-sm border border-stone-200/50 h-fit relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-                        <div className="flex items-center gap-2 mb-8">
-                            <Sparkles size={16} className="text-amber-500" />
-                            <h3 className="text-xs font-bold text-stone-400 uppercase tracking-[0.2em]">Quick Insights</h3>
-                        </div>
-                        <HiddenGems data={data} />
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_286px] gap-6 mt-12 items-stretch">
+                <OriginsLeaderboard data={data} />
+                <div className="flex flex-col gap-4">
+                    <QuickStats data={data} totalCount={totalCount} />
+                    <RecentHighScorers data={data} />
                 </div>
             </div>
         </section>

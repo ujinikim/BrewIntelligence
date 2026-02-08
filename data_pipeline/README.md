@@ -1,32 +1,48 @@
-# Data Pipeline Setup
+# Data Pipeline
 
-## 1. Environment Setup
-1.  Create a virtual environment:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-2.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    playwright install
-    ```
+Coffee reviews scraping and data processing pipeline for BrewIntelligence.
 
-## 2. Supabase Setup
-1.  Go to [Supabase](https://supabase.com) and create a new project.
-2.  Go to the **SQL Editor** in the sidebase.
-3.  Copy the contents of `supabase_schema.sql` and run it. This will:
-    *   Enable `pgvector`.
-    *   Create the `reviews` table.
-    *   Create the `match_reviews` function.
-4.  Get your **Project URL** and **Service Role Key** (Project Settings > API).
-
-## 3. Configuration
-Create a `.env` file in this directory:
-```bash
-SUPABASE_URL="your-project-url"
-SUPABASE_KEY="your-service-role-key"  # Service role needed for writing data
+## Folder Structure
+```
+data_pipeline/
+├── scripts/           # Python scripts
+│   ├── scrape_and_embed.py    # Main scraper with embeddings
+│   ├── fetch_sitemap.py       # URL discovery from sitemap
+│   ├── migrate.py             # Basic migration
+│   └── migrate_clean.py       # Data cleaning migration
+├── sql/               # Database schemas
+│   ├── supabase_schema.sql    # Main table schema
+│   ├── add_normalized_columns.sql  # Cleaned data columns
+│   └── match_reviews.sql      # Semantic search function
+├── logs/              # Generated data & logs
+├── docs/              # Documentation
+└── requirements.txt   # Python dependencies
 ```
 
-## 4. Running the Scraper
-(Scripts coming soon: `fetch_sitemap.py` and `scrape_and_embed.py`)
+## Setup
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+playwright install
+```
+
+## Usage
+
+### Run the scraper
+```bash
+python scripts/scrape_and_embed.py
+```
+
+### Run data cleaning migration
+```bash
+python scripts/migrate_clean.py
+```
+
+## Environment Variables
+Create `.env` in project root:
+```
+SUPABASE_URL="your-project-url"
+SUPABASE_KEY="your-service-role-key"
+```

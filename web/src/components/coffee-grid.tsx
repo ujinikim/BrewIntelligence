@@ -80,7 +80,7 @@ export function CoffeeGrid({ data }: { data: CoffeeReview[] }) {
           <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-stone-100/50">
             <div className="flex items-center gap-2 text-stone-900 font-bold text-sm bg-stone-100 px-3 py-1.5 rounded-xl">
                <Sparkles size={14} className="text-amber-500" />
-               {bean.price && bean.price !== 'N/A' ? bean.price : 'Price N/A'}
+               {bean.price_usd ? `$${bean.price_usd.toFixed(2)}` : 'Price N/A'}
             </div>
             
             <div className="flex items-center gap-2 text-[10px] font-bold text-stone-400 uppercase tracking-widest">

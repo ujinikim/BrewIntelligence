@@ -90,6 +90,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <p className="mt-4 text-sm text-stone-500">
                   © 2026 BrewIntelligence. Powered by AI and Specialty Passion.
               </p>
+              <p className="mt-3 text-xs text-stone-400">
+                  Data respectfully aggregated from <a href="https://www.coffeereview.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">CoffeeReview.com</a>. All prices displayed in USD.
+              </p>
           </div>
       </footer>
     </div>

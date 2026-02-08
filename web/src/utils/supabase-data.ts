@@ -9,6 +9,12 @@ export interface CoffeeReview {
   price?: string;
   url?: string;
   origin?: string;
+  country?: string; // Normalized country from migration
+  price_numeric?: number; // Parsed price value
+  currency?: string; // USD, NTD, EUR, etc.
+  price_usd?: number; // Price converted to USD
+  review_year?: number; // Extracted year
+  roast_category?: string; // Light, Medium, Dark
   roast_level?: string;
   roaster_location?: string;
   aroma?: number;
