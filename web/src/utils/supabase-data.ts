@@ -12,7 +12,9 @@ export interface CoffeeReview {
   country?: string; // Normalized country from migration
   price_numeric?: number; // Parsed price value
   currency?: string; // USD, NTD, EUR, etc.
-  price_usd?: number; // Price converted to USD
+  weight_oz?: number; // Weight in ounces
+  weight_unit?: string; // Original unit (oz, g, lb, kg)
+  price_per_oz_usd?: number; // Normalized price per ounce in USD
   review_year?: number; // Extracted year
   roast_category?: string; // Light, Medium, Dark
   roast_level?: string;

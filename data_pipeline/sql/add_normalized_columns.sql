@@ -4,7 +4,9 @@
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS country text;
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS price_numeric decimal(10,2);
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS currency text;
-ALTER TABLE reviews ADD COLUMN IF NOT EXISTS price_usd decimal(10,2);
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS weight_oz decimal(10,2);
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS weight_unit text;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS price_per_oz_usd decimal(10,2);
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS review_year int;
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS roast_category text;
 

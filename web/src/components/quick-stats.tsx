@@ -27,7 +27,7 @@ export function QuickStats({ data, totalCount }: { data: CoffeeReview[], totalCo
   return (
     <div className="glass p-6 rounded-2xl border border-stone-200/50">
       <h3 className="text-xs font-bold text-stone-400 uppercase tracking-[0.2em] mb-5">
-        Quick Stats
+        Quick Stats {thisYearCount > 0 ? `• ${currentYear}` : ''}
       </h3>
       
       <div className="space-y-4">
