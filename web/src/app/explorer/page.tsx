@@ -6,7 +6,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { CoffeeReview } from '@/utils/supabase-data';
 import Link from 'next/link';
 import { Loader2, Coffee as CoffeeIcon, MapPin, Star, Search, X, Flame, Sparkles } from 'lucide-react';
-import { DashboardShell } from '@/components/dashboard-shell';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { cn } from '@/utils/cn';
 
 const FLAVOR_TAGS = [

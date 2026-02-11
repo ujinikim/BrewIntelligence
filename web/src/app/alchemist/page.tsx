@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { DashboardShell } from '@/components/dashboard-shell';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { CoffeeReview } from '@/utils/supabase-data';
 import { Beaker, Plus, Minus, Zap, Coffee, Loader2, Sparkles, X, MapPin, FlaskConical, Flame } from 'lucide-react';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { CoffeeReview } from '@/utils/supabase-data';
-import { ArrowUpRight, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, MapPin, Sparkles, Coffee } from 'lucide-react';
 
 function StatBar({ label, value }: { label: string; value?: number }) {
   if (value === undefined || value === null) return null;
@@ -36,12 +36,20 @@ export function ReviewsGrid({ data }: { data: CoffeeReview[] }) {
       {data.map((bean, idx) => (
         <div 
           key={bean.id} 
-          className="group relative bg-white rounded-[2rem] border border-stone-200/60 p-8 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 flex flex-col h-full animate-in fade-in slide-in-from-bottom-8 duration-700"
-          style={{ animationDelay: `${idx * 50}ms` }}
+          className="group relative bg-white rounded-[2rem] border border-stone-200/60 p-8 hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-500 flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 overflow-hidden"
+          style={{ animationDelay: `${idx * 50}ms`, minHeight: '480px' }}
         >
+          {/* Rating Badge */}
           <div className="absolute top-8 left-8 w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center font-serif font-bold text-lg text-white shadow-xl z-10 group-hover:rotate-3 transition-transform">
              {bean.rating || '—'}
           </div>
+
+          {/* Roast Category Badge */}
+          {bean.roast_category && (
+            <div className="absolute top-[2.75rem] left-24 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+              {bean.roast_category}
+            </div>
+          )}
 
           <div className="flex justify-end items-start mb-10">
             {bean.url && (
@@ -56,7 +64,8 @@ export function ReviewsGrid({ data }: { data: CoffeeReview[] }) {
             )}
           </div>
 
-          <div className="mb-6">
+          {/* Title & Roaster */}
+          <div className="mb-6 flex-shrink-0">
             <h4 className="font-serif font-bold text-2xl text-[#1F1815] mb-2 line-clamp-2 leading-tight tracking-tight group-hover:text-primary transition-colors">
               {bean.title}
             </h4>
@@ -65,27 +74,34 @@ export function ReviewsGrid({ data }: { data: CoffeeReview[] }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-8 bg-stone-50/50 p-6 rounded-2xl border border-stone-100">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-6 bg-stone-50/50 p-5 rounded-2xl border border-stone-100 flex-shrink-0">
              <StatBar label="Aroma" value={bean.aroma} />
              <StatBar label="Acidity" value={bean.acidity} />
              <StatBar label="Body" value={bean.body} />
              <StatBar label="Flavor" value={bean.flavor} />
           </div>
 
-          <p className="text-stone-500 italic text-sm line-clamp-3 mb-8 leading-relaxed font-serif flex-grow">
-            "{cleanDescription(bean.review || bean.blind_assessment)}"
-          </p>
+          {/* Review Text - Fixed height with proper overflow */}
+          <div className="flex-grow min-h-0 mb-6 overflow-hidden">
+            <p className="text-stone-500 italic text-sm line-clamp-4 leading-relaxed font-serif">
+              "{cleanDescription(bean.review || bean.blind_assessment)}"
+            </p>
+          </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-stone-100/50">
+          {/* Footer - Price & Origin */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mt-auto pt-5 border-t border-stone-100/50 flex-shrink-0">
             <div className="flex items-center gap-2 text-stone-900 font-bold text-sm bg-stone-100 px-3 py-1.5 rounded-xl">
                <Sparkles size={14} className="text-amber-500" />
-               {bean.price && bean.price !== 'N/A' ? bean.price : 'Price N/A'}
+               {bean.price_per_oz_usd && bean.price_per_oz_usd > 0 
+                 ? `$${bean.price_per_oz_usd.toFixed(2)}/oz` 
+                 : (bean.price && bean.price !== 'N/A' ? bean.price : 'Price N/A')}
             </div>
             
             <div className="flex items-center gap-2 text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-                <MapPin size={12} className="text-primary" />
-                <span className="max-w-[120px] truncate">
-                  {bean.origin && bean.origin !== 'Unknown' ? bean.origin : (bean.roaster_location || 'Global Origin')}
+                <MapPin size={12} className="text-primary flex-shrink-0" />
+                <span className="max-w-[100px] truncate">
+                  {bean.country || (bean.origin && bean.origin !== 'Unknown' ? bean.origin : 'Global')}
                 </span>
             </div>
           </div>
@@ -94,3 +110,4 @@ export function ReviewsGrid({ data }: { data: CoffeeReview[] }) {
     </div>
   );
 }
+

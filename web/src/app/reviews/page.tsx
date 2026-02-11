@@ -1,27 +1,51 @@
-import { getReviews } from '@/utils/supabase-data';
-import { ReviewsGrid } from '@/components/reviews-grid';
+import { getReviews, getFilterMeta } from '@/utils/supabase-data';
+import { ReviewsGrid } from '@/components/reviews/reviews-grid';
+import { PaginationControls } from '@/components/reviews/pagination-controls';
+import { FilterSidebar } from '@/components/reviews/filter-sidebar';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Home, Database, Sparkles } from 'lucide-react';
-import { DashboardShell } from '@/components/dashboard-shell';
+import { Home, Database, Sparkles } from 'lucide-react';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ReviewsPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ 
+    page?: string; 
+    limit?: string;
+    search?: string;
+    minRating?: string;
+    country?: string;
+    roast?: string;
+    year?: string;
+  }>;
 }) {
-  const page = Number(searchParams.page) || 1;
-  const limit = 12;
-  const { data, count } = await getReviews(page, limit);
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
+  const limit = Number(params.limit) || 12;
   
-  const totalPages = Math.ceil(count / limit);
+  // Fetch data and metadata in parallel
+  const [reviewsData, filterMeta] = await Promise.all([
+    getReviews({
+      page,
+      limit,
+      search: params.search,
+      minRating: params.minRating ? Number(params.minRating) : undefined,
+      country: params.country,
+      roast: params.roast,
+      year: params.year ? Number(params.year) : undefined,
+    }),
+    getFilterMeta()
+  ]);
 
+  const { data, count } = reviewsData;
+  
   return (
     <DashboardShell>
       <div className="pb-20">
         {/* Hero Header */}
-        <div className="relative mb-16 pt-12">
+        <div className="relative mb-12 pt-12">
             <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div className="max-w-2xl">
@@ -39,7 +63,7 @@ export default async function ReviewsPage({
                         <h1 className="text-6xl font-serif font-bold text-stone-900 tracking-tight">The Library</h1>
                     </div>
                     <p className="text-stone-500 text-xl font-light leading-relaxed">
-                        Access our curated collection of <span className="text-stone-900 font-medium">{count} expert evaluations</span>. Each bean is scientifically scored across five dimensions of flavor.
+                        Access our curated collection of <span className="text-stone-900 font-medium">{count.toLocaleString()} expert evaluations</span>. Each bean is scientifically scored across five dimensions of flavor.
                     </p>
                 </div>
                 <div className="bg-white p-6 rounded-[2rem] border border-stone-200/50 shadow-sm flex items-center gap-6 group hover:shadow-md transition-all">
@@ -55,45 +79,19 @@ export default async function ReviewsPage({
             </div>
         </div>
 
-        <div className="mt-12">
-            <ReviewsGrid data={data} />
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mt-12">
+            {/* Sidebar Filters */}
+            <aside>
+                <FilterSidebar 
+                    countries={filterMeta.countries} 
+                    years={filterMeta.years} 
+                />
+            </aside>
 
-            {/* Premium Pagination */}
-            <div className="flex justify-center items-center gap-8 mt-24">
-                {page > 1 ? (
-                    <Link 
-                        href={`/reviews?page=${page - 1}`}
-                        className="group flex items-center gap-3 px-8 py-4 bg-white border border-stone-200 rounded-2xl font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary hover:shadow-xl transition-all active:scale-95"
-                    >
-                        <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
-                        Previous
-                    </Link>
-                ) : (
-                    <button disabled className="flex items-center gap-3 px-8 py-4 bg-stone-50 text-stone-300 border border-transparent rounded-2xl font-bold uppercase tracking-widest text-xs cursor-not-allowed">
-                        <ChevronLeft size={16} /> Previous
-                    </button>
-                )}
-
-                <div className="flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.3em]">Vault Page</span>
-                    <span className="font-serif text-2xl font-bold text-stone-900">
-                        {page} <span className="text-stone-300 font-light mx-1">/</span> {totalPages}
-                    </span>
-                </div>
-
-                {page < totalPages ? (
-                    <Link 
-                        href={`/reviews?page=${page + 1}`}
-                        className="group flex items-center gap-3 px-8 py-4 bg-stone-900 text-white border border-stone-900 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-stone-800 hover:shadow-xl transition-all active:scale-95"
-                    >
-                        Next 
-                        <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                ) : (
-                    <button disabled className="flex items-center gap-3 px-8 py-4 bg-stone-50 text-stone-300 border border-transparent rounded-2xl font-bold uppercase tracking-widest text-xs cursor-not-allowed">
-                         Next <ChevronRight size={16} />
-                    </button>
-                )}
+            {/* Results */}
+            <div className="flex-grow min-w-0 space-y-12">
+                <ReviewsGrid data={data} />
+                <PaginationControls count={count} />
             </div>
         </div>
       </div>

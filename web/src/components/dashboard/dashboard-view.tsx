@@ -1,12 +1,12 @@
 'use client';
 
 import { CoffeeReview } from '@/utils/supabase-data';
-import { KPICards } from '@/components/kpi-cards';
-import { OriginsLeaderboard } from '@/components/origins-leaderboard';
-import { QuickStats } from '@/components/quick-stats';
-import { RecentHighScorers } from '@/components/recent-high-scorers';
-import { CoffeeGrid } from '@/components/coffee-grid';
-import { DashboardHero } from '@/components/dashboard-hero';
+import { KPICards } from './kpi-cards';
+import { OriginsLeaderboard } from './origins-leaderboard';
+import { QuickStats } from './quick-stats';
+import { RecentHighScorers } from './recent-high-scorers';
+import { CoffeeGrid } from './coffee-grid';
+import { DashboardHero } from './dashboard-hero';
 import { BarChart3, Clock } from 'lucide-react';
 
 export function DashboardView({ data, totalCount }: { data: CoffeeReview[], totalCount: number }) {

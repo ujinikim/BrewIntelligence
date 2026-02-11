@@ -1,6 +1,6 @@
 import { getDashboardData, getTotalReviewCount } from '@/utils/supabase-data';
-import { DashboardShell } from '@/components/dashboard-shell';
-import { DashboardView } from '@/components/dashboard-view';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
+import { DashboardView } from '@/components/dashboard/dashboard-view';
 
 // Force dynamic because we are fetching live DB data
 export const dynamic = 'force-dynamic';

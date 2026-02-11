@@ -28,13 +28,54 @@ export interface CoffeeReview {
   created_at?: string;
 }
 
-export async function getReviews(page = 1, limit = 12) {
+export interface ReviewsFilterParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  minRating?: number;
+  country?: string;
+  roast?: string;
+  year?: number;
+}
+
+export async function getReviews({ 
+  page = 1, 
+  limit = 12, 
+  search, 
+  minRating, 
+  country, 
+  roast,
+  year 
+}: ReviewsFilterParams) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, count, error } = await supabase
+  let query = supabase
     .from('reviews')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'exact' });
+
+  // Apply filters
+  if (search) {
+    query = query.or(`title.ilike.%${search}%,roaster.ilike.%${search}%`);
+  }
+  
+  if (minRating) {
+    query = query.gte('rating', minRating);
+  }
+
+  if (country && country !== 'All') {
+    query = query.eq('country', country);
+  }
+
+  if (roast && roast !== 'All') {
+    query = query.eq('roast_category', roast);
+  }
+
+  if (year) {
+    query = query.eq('review_year', year);
+  }
+
+  const { data, count, error } = await query
     .order('id', { ascending: false })
     .range(from, to);
 
@@ -66,8 +107,51 @@ export async function getTotalReviewCount() {
     .select('*', { count: 'exact', head: true });
 
   if (error) {
-    console.error("Error fetching total review count:", error);
     return 0;
   }
   return count || 0;
+}
+
+// Helper to fetch all unique values for a column bypassing 1000 row limit
+async function getAllUniqueValues<T>(column: string): Promise<T[]> {
+  let allValues: any[] = [];
+  let page = 0;
+  const chunkSize = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select(column)
+      .not(column, 'is', null)
+      .range(page * chunkSize, (page + 1) * chunkSize - 1);
+
+    if (error) {
+      console.error(`Error fetching ${column}:`, error);
+      break;
+    }
+    
+    if (!data || data.length === 0) break;
+
+    allValues.push(...data.map((item: any) => item[column]));
+    
+    if (data.length < chunkSize) break;
+    page++;
+  }
+
+  return Array.from(new Set(allValues)).sort((a, b) => {
+    if (typeof a === 'number' && typeof b === 'number') return b - a; // Descending for numbers (years)
+    return String(a).localeCompare(String(b)); // Ascending for strings
+  });
+}
+
+export async function getFilterMeta() {
+  const [countries, years] = await Promise.all([
+    getAllUniqueValues<string>('country'),
+    getAllUniqueValues<number>('review_year')
+  ]);
+
+  return {
+    countries,
+    years
+  };
 }
