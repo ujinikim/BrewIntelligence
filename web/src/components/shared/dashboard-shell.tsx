@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Coffee, Search, Database, Beaker, Map, FlaskConical, ChevronUp } from 'lucide-react';
+import { Coffee, Search, Database, Beaker, Map, FlaskConical, ChevronUp, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/utils/cn';
@@ -33,6 +33,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const mainNavItems = [
     { label: 'Dashboard', href: '/', icon: Map },
+    { label: 'Insights', href: '/insights', icon: BarChart3 },
     { label: 'Reviews', href: '/reviews', icon: Database },
   ];
 
