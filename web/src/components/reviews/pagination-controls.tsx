@@ -61,7 +61,6 @@ export function PaginationControls({ count }: PaginationControlsProps) {
           <option value="48">48</option>
           <option value="96">96</option>
         </select>
-        <span className="text-stone-400 text-xs">rows</span>
       </div>
 
       {/* Center: Page Navigation */}
@@ -159,7 +158,6 @@ export function PaginationControls({ count }: PaginationControlsProps) {
           onChange={(e) => setPageInput(e.target.value)}
           className="w-14 px-2 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-center text-xs font-bold text-stone-900 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
         />
-        <span className="text-xs text-stone-400">/ {totalPages}</span>
         <button
           type="submit"
           className="ml-1 px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg text-xs font-bold hover:bg-stone-200 hover:text-stone-900 transition-all"

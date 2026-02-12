@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     // 4. Call Supabase RPC
     const { data: matchResults, error: rpcError } = await supabase.rpc('match_reviews', {
       query_embedding: queryVector,
-      match_threshold: 0.1, 
+      match_threshold: 0.4, 
       match_count: 20
     });
 

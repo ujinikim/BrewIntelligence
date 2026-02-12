@@ -45,8 +45,8 @@ function ExplorerContent() {
   const [query, setQuery] = useState(initialQuery);
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
 
-  const searchState = { query, selectedFlavors };
-  const debouncedSearch = useDebounce(searchState, 500);
+  const debouncedQuery = useDebounce(query, 500);
+  const debouncedFlavors = useDebounce(selectedFlavors.join(','), 500);
 
   const toggleFlavor = (id: string) => {
     setSelectedFlavors(prev => 
@@ -62,7 +62,7 @@ function ExplorerContent() {
   };
 
   useEffect(() => {
-    if (!debouncedSearch.query && debouncedSearch.selectedFlavors.length === 0) {
+    if (!debouncedQuery && !debouncedFlavors) {
       setResults([]);
       return;
     }
@@ -71,14 +71,12 @@ function ExplorerContent() {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-        if (debouncedSearch.query) params.append('q', debouncedSearch.query);
-        if (debouncedSearch.selectedFlavors.length > 0) params.append('flavors', debouncedSearch.selectedFlavors.join(','));
+        if (debouncedQuery) params.append('q', debouncedQuery);
+        if (debouncedFlavors) params.append('flavors', debouncedFlavors);
 
         const res = await fetch(`/api/search?${params.toString()}`);
         const data = await res.json();
-        if (data.results) {
-          setResults(data.results);
-        }
+        setResults(data.results || []);
       } catch (error) {
         console.error("Search failed", error);
       } finally {
@@ -87,7 +85,7 @@ function ExplorerContent() {
     }
 
     fetchData();
-  }, [debouncedSearch]);
+  }, [debouncedQuery, debouncedFlavors]);
 
   return (
     <div className="max-w-5xl mx-auto py-12 px-6">

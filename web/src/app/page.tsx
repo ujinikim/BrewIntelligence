@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const [data, totalCount] = await Promise.all([
-    getDashboardData(500),
+    getDashboardData(10000),
     getTotalReviewCount()
   ]);
 
