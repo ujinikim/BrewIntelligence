@@ -43,3 +43,11 @@ jobs:
       run: |
         # Populate country, price_usd, review_year, roast_category for new entries
         python data_pipeline/scripts/migrate_clean.py
+    # Temporary Python Post-Process. 
+    - name: Post-Process & Build Aggregates
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: |
+        # Compute aggregates for roasters, countries, and insights_cache tables
+        python data_pipeline/scripts/post_process.py
