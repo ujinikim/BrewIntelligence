@@ -7,6 +7,7 @@ Computes aggregates and stores them in roasters, countries, insights_cache table
 import os
 import json
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -36,7 +37,7 @@ def fetch_all_reviews():
         result = supabase.table('reviews').select(
             'id, title, roaster, roaster_location, rating, price, '
             'price_per_oz_usd, country, review_year, roast_category, '
-            'aroma, acidity, body, flavor, aftertaste, roast_level, origin'
+            'aroma, acidity, body, flavor, aftertaste, roast_level, origin, created_at'
         ).range(page * chunk, (page + 1) * chunk - 1).execute()
 
         if not result.data:
@@ -356,8 +357,60 @@ def compute_and_cache_insights(reviews):
     }
     cache_entries['highlights'] = highlights
 
+    # 9. Dashboard Stats (Recent / Monthly Pulse)
+    # Calculate stats for the last 30 days
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(days=30)
+    
+    recent_subset = []
+    for r in reviews:
+        if r.get('created_at'):
+            try:
+                # Handle ISO format with or without microseconds/Z
+                ts = r['created_at'].replace('Z', '+00:00')
+                dt = datetime.fromisoformat(ts)
+                if dt > cutoff:
+                    recent_subset.append(r)
+            except Exception as e:
+                pass
+    
+    # Recent Stats
+    recent_count = len(recent_subset)
+    recent_ratings = [r['rating'] for r in recent_subset if r.get('rating')]
+    recent_avg_rating = rnd(avg(recent_ratings)) if recent_ratings else 0
+    
+    # Top Origin (Recent)
+    recent_origins = defaultdict(int)
+    for r in recent_subset:
+        if r.get('country'):
+            recent_origins[r['country']] += 1
+    top_recent_origin = max(recent_origins.items(), key=lambda x: x[1])[0] if recent_origins else "N/A"
+    
+    # Top Rated (Recent)
+    sorted_recent = sorted([r for r in recent_subset if r.get('rating')], key=lambda x: -x['rating'])
+    top_recent_bean = sorted_recent[0] if sorted_recent else None
+    
+    dashboard_stats = {
+        'total_reviews': len(reviews),
+        'recent_count_30d': recent_count,
+        'recent_avg_rating': recent_avg_rating,
+        'recent_top_origin': top_recent_origin,
+        'recent_top_rated': top_recent_bean,
+        'last_updated': max([r['created_at'] for r in reviews if r.get('created_at')], default=None)
+    }
+    cache_entries['dashboard_stats'] = dashboard_stats
+
+    # 10. Recent Reviews (Top 12 by ID, assuming ID is chronological)
+    sorted_by_id = sorted(reviews, key=lambda x: -x['id'])
+    cache_entries['recent_reviews'] = sorted_by_id[:12]
+
+    # 11. Filter Metadata (for Reviews page)
+    unique_countries = sorted(list(set([r['country'] for r in reviews if r.get('country')])))
+    unique_years = sorted(list(set([r['review_year'] for r in reviews if r.get('review_year')])), reverse=True)
+    cache_entries['filter_options'] = {'countries': unique_countries, 'years': unique_years}
+
     # ─── Write all entries to insights_cache ─────────────────────────────────
-    rows = [{'key': k, 'data': json.dumps(v)} for k, v in cache_entries.items()]
+    rows = [{'key': k, 'data': json.dumps(v, default=str)} for k, v in cache_entries.items()]
     supabase.table('insights_cache').upsert(rows, on_conflict='key').execute()
 
     print(f"  ✅ Cached {len(rows)} insight keys")
