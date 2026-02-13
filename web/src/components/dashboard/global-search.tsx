@@ -17,7 +17,7 @@ export function GlobalSearch() {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto mb-10 relative z-10">
+        <div className="w-full mx-auto mb-10 relative z-10">
             <form onSubmit={handleSearch} className="relative group">
                 <div className={`
             absolute -inset-1 rounded-[1.5rem] bg-gradient-to-r from-stone-200 via-stone-400 to-stone-200 opacity-20 blur-lg transition duration-500
@@ -40,7 +40,7 @@ export function GlobalSearch() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
+                        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                         placeholder="Find your perfect coffee..."
                         className="flex-1 h-12 bg-transparent border-none outline-none text-lg text-stone-900 placeholder:text-stone-400 font-medium"
                     />
