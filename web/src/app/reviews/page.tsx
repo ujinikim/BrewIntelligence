@@ -2,9 +2,9 @@ import { getReviews, getCachedFilterMeta } from '@/utils/supabase-data';
 import { ReviewsGrid } from '@/components/reviews/reviews-grid';
 import { PaginationControls } from '@/components/reviews/pagination-controls';
 import { FilterSidebar } from '@/components/reviews/filter-sidebar';
-import Link from 'next/link';
-import { Home, Database, Sparkles } from 'lucide-react';
 import { DashboardShell } from '@/components/shared/dashboard-shell';
+import Link from 'next/link';
+import { Home, Library, Sparkles } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,13 +56,13 @@ export default async function ReviewsPage({
                 <span className="opacity-30">/</span>
                 <span className="text-stone-900">Archive</span>
               </div>
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                  <Database size={24} />
+                  <Library size={24} />
                 </div>
-                <h1 className="text-6xl font-serif font-bold text-stone-900 tracking-tight">The Library</h1>
+                <h1 className="text-5xl font-serif font-bold text-[#1F1815] tracking-tight">The Library</h1>
               </div>
-              <p className="text-stone-500 text-xl font-light leading-relaxed">
+              <p className="text-stone-500 text-lg font-light leading-relaxed">
                 Access our curated collection of <span className="text-stone-900 font-medium">{count.toLocaleString()} expert evaluations</span>. Each bean is scientifically scored across five dimensions of flavor.
               </p>
             </div>

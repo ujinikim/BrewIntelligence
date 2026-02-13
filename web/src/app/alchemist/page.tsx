@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { CoffeeReview } from '@/utils/supabase-data';
-import { Beaker, Plus, Minus, Zap, Coffee, Loader2, Sparkles, X, MapPin, FlaskConical, Flame } from 'lucide-react';
+import { Beaker, Plus, Minus, Zap, Coffee, Loader2, Sparkles, X, MapPin, FlaskConical, Flame, Home } from 'lucide-react';
 
 const CONCEPTS = [
     "Fruit", "Chocolate", "Nutty", "Floral", "Bright", "Body",
@@ -170,15 +170,27 @@ export default function AlchemistPage() {
     return (
         <DashboardShell>
             <div className="max-w-6xl mx-auto py-12 px-6">
-                <div className="text-center mb-16 relative">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/5 blur-3xl -z-10 rounded-full" />
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full text-xs font-bold uppercase tracking-[0.2em] mb-4">
-                        <Sparkles size={14} /> The Experimental Lab
+                {/* Header */}
+                <div className="relative mb-12 pt-12">
+                    <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
+                    <div className="max-w-2xl">
+                        <div className="flex items-center gap-2 mb-6 text-stone-400 text-xs font-bold uppercase tracking-[0.3em]">
+                            <a href="/" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                                <Home size={12} /> Home
+                            </a>
+                            <span className="opacity-30">/</span>
+                            <span className="text-stone-900">Lab</span>
+                        </div>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                                <FlaskConical size={24} />
+                            </div>
+                            <h1 className="text-5xl font-serif font-bold text-[#1F1815] tracking-tight">The Coffee Alchemist</h1>
+                        </div>
+                        <p className="text-stone-500 text-lg font-light leading-relaxed">
+                            Perform vector arithmetic on flavor concepts to discover hybrid beans that match your mathematical ideal.
+                        </p>
                     </div>
-                    <h1 className="text-6xl font-serif font-bold text-stone-900 mb-6 tracking-tight">The Coffee Alchemist</h1>
-                    <p className="text-xl text-stone-500 font-light max-w-2xl mx-auto leading-relaxed">
-                        Perform vector arithmetic on flavor concepts to discover hybrid beans that match your mathematical ideal.
-                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">

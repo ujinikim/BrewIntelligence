@@ -8,27 +8,41 @@ import { FlavorRadar } from './flavor-radar';
 import { RoastComparison } from './roast-comparison';
 import { CountryTable } from './country-table';
 import { PriceTiers } from './price-tiers';
-import { TrendingUp, Award, Lightbulb, DollarSign } from 'lucide-react';
+import { TrendingUp, Award, Lightbulb, DollarSign, Home, Telescope } from 'lucide-react';
 
 export function InsightsView({ data }: { data: InsightsData }) {
   const { highlights } = data;
 
   return (
     <div className="space-y-12">
-      {/* Hero */}
-      <section className="text-center space-y-4 py-6">
-        <h1 className="text-5xl md:text-6xl font-serif font-bold tracking-tighter text-stone-900">
-          Coffee Insights
-        </h1>
-        <p className="text-stone-500 max-w-2xl mx-auto text-lg">
-          Data-driven stories from{' '}
-          <span className="font-bold text-amber-600">
-            {data.totalReviews.toLocaleString()}
-          </span>{' '}
-          expert coffee reviews — uncovering trends, patterns, and hidden gems in
-          specialty coffee.
-        </p>
-      </section>
+      {/* Header */}
+      <div className="relative mb-12 pt-12">
+        <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
+        <div className="max-w-2xl">
+          <div className="flex items-center gap-2 mb-6 text-stone-400 text-xs font-bold uppercase tracking-[0.3em]">
+            <a href="/" className="hover:text-primary transition-colors flex items-center gap-1.5">
+              <Home size={12} /> Home
+            </a>
+            <span className="opacity-30">/</span>
+            <span className="text-stone-900">Insights</span>
+          </div>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+              <Telescope size={24} />
+            </div>
+            <h1 className="text-5xl font-serif font-bold text-[#1F1815] tracking-tight">
+              Coffee Insights
+            </h1>
+          </div>
+          <p className="text-stone-500 text-lg font-light leading-relaxed">
+            Data-driven stories from{' '}
+            <span className="font-bold text-amber-600">
+              {data.totalReviews.toLocaleString()}
+            </span>{' '}
+            expert coffee reviews.
+          </p>
+        </div>
+      </div>
 
       {/* Highlight Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

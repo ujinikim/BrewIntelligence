@@ -5,41 +5,12 @@ import { CoffeeReview, DashboardStats } from '@/utils/supabase-data';
 import { KPICards } from './kpi-cards';
 import { CoffeeGrid } from './coffee-grid';
 import { GlobalSearch } from './global-search';
-import { Clock, Activity } from 'lucide-react';
-
-function SystemStatus({ lastUpdated }: { lastUpdated?: string | null }) {
-    // Format the date if it exists
-    const dateStr = lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-US', {
-        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-    }) : 'Unknown';
-
-    return (
-        <div className="flex items-center gap-4 bg-white/50 border border-stone-200/50 px-4 py-2 rounded-full shadow-sm backdrop-blur-sm self-start md:self-auto">
-            <div className="flex items-center gap-2">
-                <div className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </div>
-                <span className="text-xs font-bold text-stone-600 uppercase tracking-wider">Pipeline Online</span>
-            </div>
-            <div className="w-px h-4 bg-stone-200" />
-            <div className="flex items-center gap-1.5 text-stone-500">
-                <Activity size={12} />
-                <span className="text-[10px] font-mono">LAST ADDED: {dateStr}</span>
-            </div>
-        </div>
-    );
-}
+import { Clock } from 'lucide-react';
 
 export function DashboardView({ data, stats }: { data: CoffeeReview[], stats: DashboardStats | null }) {
-    const lastUpdated = stats?.last_updated || (data.length > 0 ? data[0].created_at : undefined);
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col md:items-center justify-between gap-4">
-                <div />
-                <SystemStatus lastUpdated={lastUpdated} />
-            </div>
 
             <GlobalSearch />
 

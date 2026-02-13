@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Coffee, Search, Database, Beaker, Map, FlaskConical, ChevronUp, BarChart3 } from 'lucide-react';
+import { Coffee, Gauge, Telescope, Library, Compass, FlaskConical, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/utils/cn';
@@ -9,6 +9,7 @@ import { cn } from '@/utils/cn';
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [expOpen, setExpOpen] = useState(false);
+  const [pipelineDate, setPipelineDate] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -31,15 +32,31 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     setExpOpen(false);
   }, [pathname]);
 
+  // Fetch pipeline last-run date
+  useEffect(() => {
+    fetch('/api/status')
+      .then(res => res.json())
+      .then(d => {
+        if (d.lastUpdated) {
+          setPipelineDate(
+            new Date(d.lastUpdated).toLocaleDateString('en-US', {
+              month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+            })
+          );
+        }
+      })
+      .catch(() => { });
+  }, []);
+
   const mainNavItems = [
-    { label: 'Dashboard', href: '/', icon: Map },
-    { label: 'Insights', href: '/insights', icon: BarChart3 },
-    { label: 'Reviews', href: '/reviews', icon: Database },
+    { label: 'Dashboard', href: '/', icon: Gauge },
+    { label: 'Insights', href: '/insights', icon: Telescope },
+    { label: 'Reviews', href: '/reviews', icon: Library },
   ];
 
   const experimentalItems = [
-    { label: 'AI Explorer', href: '/explorer', icon: Search, description: 'Semantic flavor search' },
-    { label: 'Alchemist Lab', href: '/alchemist', icon: Beaker, description: 'Blend builder & simulator' },
+    { label: 'AI Explorer', href: '/explorer', icon: Compass, description: 'Semantic flavor search' },
+    { label: 'Alchemist Lab', href: '/alchemist', icon: FlaskConical, description: 'Blend builder & simulator' },
   ];
 
   const isExperimentalActive = experimentalItems.some(item => pathname === item.href);
@@ -163,10 +180,23 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </div>
             </nav>
 
-            {/* Version Badge */}
-            <div className="hidden sm:flex items-center gap-4">
-              <span className="px-3 py-1 bg-stone-100 text-stone-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-stone-200/50">
-                Alpha v1.3.0
+            {/* Pipeline Status */}
+            <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200/50 rounded-full">
+                <div className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Online</span>
+                {pipelineDate && (
+                  <>
+                    <div className="w-px h-3 bg-emerald-200" />
+                    <span className="text-[10px] font-mono text-emerald-600/70">{pipelineDate}</span>
+                  </>
+                )}
+              </div>
+              <span className="px-2.5 py-1 bg-stone-100 text-stone-400 rounded-lg text-[9px] font-bold uppercase tracking-widest border border-stone-200/50">
+                v1.3
               </span>
             </div>
           </div>

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
 import { CoffeeReview } from '@/utils/supabase-data';
 import Link from 'next/link';
-import { Loader2, Coffee as CoffeeIcon, MapPin, Star, Search, X, Flame, Sparkles } from 'lucide-react';
+import { Loader2, Coffee as CoffeeIcon, MapPin, Star, Search, X, Flame, Sparkles, Home, Compass } from 'lucide-react';
 import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { cn } from '@/utils/cn';
 
@@ -90,17 +90,33 @@ function ExplorerContent() {
     return (
         <div className="max-w-5xl mx-auto py-12 px-6">
 
+            {/* Header */}
+            <div className="relative mb-12 pt-12">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
+                <div className="max-w-2xl">
+                    <div className="flex items-center gap-2 mb-6 text-stone-400 text-xs font-bold uppercase tracking-[0.3em]">
+                        <a href="/" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                            <Home size={12} /> Home
+                        </a>
+                        <span className="opacity-30">/</span>
+                        <span className="text-stone-900">Explorer</span>
+                    </div>
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-stone-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                            <Compass size={24} />
+                        </div>
+                        <h1 className="text-5xl font-serif font-bold text-[#1F1815] tracking-tight">AI Flavor Explorer</h1>
+                    </div>
+                    <p className="text-stone-500 text-lg font-light leading-relaxed">Describe the profile you desire, and our neural engine will match it against thousands of expert cuppings.</p>
+                </div>
+            </div>
+
             {/* Search Console */}
             <div className="glass p-12 rounded-[3rem] shadow-2xl border border-stone-200/50 mb-16 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-[80px] pointer-events-none" />
 
                 <div className="flex flex-col items-center gap-8 max-w-2xl mx-auto text-center relative z-10">
-                    <div className="w-16 h-16 bg-stone-900 rounded-[1.5rem] flex items-center justify-center text-white mb-2 rotate-3 hover:rotate-0 transition-transform shadow-xl">
-                        <Search size={32} />
-                    </div>
-                    <h2 className="text-5xl font-serif font-bold text-stone-900 tracking-tight">AI Flavor Explorer</h2>
-                    <p className="text-stone-500 font-light text-xl leading-relaxed">Describe the profile you desire, and our neural engine will match it against thousands of expert cuppings.</p>
 
                     <div className="relative w-full group mt-4">
                         <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
