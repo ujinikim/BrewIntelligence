@@ -36,7 +36,7 @@ export function DashboardView({ data, stats }: { data: CoffeeReview[], stats: Da
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:items-center justify-between gap-4">
                 <div />
                 <SystemStatus lastUpdated={lastUpdated} />
             </div>
