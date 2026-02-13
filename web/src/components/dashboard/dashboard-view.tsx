@@ -7,7 +7,7 @@ import { CoffeeGrid } from './coffee-grid';
 import { GlobalSearch } from './global-search';
 import { Clock, Activity } from 'lucide-react';
 
-function SystemStatus({ lastUpdated }: { lastUpdated?: string | null }) {
+export function SystemStatus({ lastUpdated }: { lastUpdated?: string | null }) {
     // Format the date if it exists
     const dateStr = lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-US', {
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
@@ -36,11 +36,6 @@ export function DashboardView({ data, stats }: { data: CoffeeReview[], stats: Da
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div />
-                <SystemStatus lastUpdated={lastUpdated} />
-            </div>
-
             <GlobalSearch />
 
             <section>
