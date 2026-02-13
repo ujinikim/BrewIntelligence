@@ -1,4 +1,4 @@
-import { getDashboardData, getTotalReviewCount } from '@/utils/supabase-data';
+import { getCachedDashboardData, getDashboardData, getTotalReviewCount } from '@/utils/supabase-data';
 import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { DashboardView } from '@/components/dashboard/dashboard-view';
 
@@ -6,21 +6,32 @@ import { DashboardView } from '@/components/dashboard/dashboard-view';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const [data, totalCount] = await Promise.all([
-    getDashboardData(10000),
-    getTotalReviewCount()
-  ]);
+  const cached = await getCachedDashboardData();
+
+  // Cache is primary source now
+  const data = cached.recentReviews || [];
+  const stats = cached.stats;
+
+  if (!data || data.length === 0) {
+    // Basic fallback if cache is empty (just to show something)
+    const [liveData] = await Promise.all([
+      getDashboardData(12)
+    ]);
+    return (
+      <DashboardShell>
+        <DashboardView data={liveData} stats={null} />
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell>
       <div className="mb-8 pt-4">
-        <h1 className="text-5xl font-serif font-bold text-[#1F1815] mb-3">Market Overview</h1>
-        <p className="text-lg text-[#1F1815]/70 max-w-2xl font-light">
-          Analyzing {totalCount} specialty coffee beans from across the globe to find the perfect brew.
-        </p>
+        <h1 className="text-4xl font-serif font-bold text-[#1F1815]">Daily Briefing</h1>
+        <p className="text-stone-500 mt-2">Latest operational intelligence.</p>
       </div>
 
-      <DashboardView data={data} totalCount={totalCount} />
+      <DashboardView data={data} stats={stats} />
     </DashboardShell>
   );
 }

@@ -144,6 +144,8 @@ async function getAllUniqueValues<T>(column: string): Promise<T[]> {
   });
 }
 
+// ─── Filter Helpers ──────────────────────────────────────────────────────────
+
 export async function getFilterMeta() {
   const [countries, years] = await Promise.all([
     getAllUniqueValues<string>('country'),
@@ -154,4 +156,57 @@ export async function getFilterMeta() {
     countries,
     years
   };
+}
+
+// ─── Cache Helpers ──────────────────────────────────────────────────────────
+
+export interface DashboardStats {
+  total_reviews: number;
+  recent_count_30d: number;
+  recent_avg_rating: number;
+  recent_top_origin: string;
+  recent_top_rated: {
+    title: string;
+    rating: number;
+    roaster: string;
+  } | null;
+  last_updated: string | null;
+}
+
+export async function getCachedDashboardData() {
+  const { data, error } = await supabase
+    .from('insights_cache')
+    .select('key, data')
+    .in('key', ['dashboard_stats', 'recent_reviews']);
+
+  if (error) {
+    console.error('Error fetching dashboard cache:', error);
+    return { stats: null, recentReviews: [] };
+  }
+
+  const cache: Record<string, any> = {};
+  for (const row of data || []) {
+    cache[row.key] = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+  }
+
+  return {
+    stats: (cache.dashboard_stats as DashboardStats) || null,
+    recentReviews: (cache.recent_reviews as CoffeeReview[]) || []
+  };
+}
+
+export async function getCachedFilterMeta() {
+  const { data, error } = await supabase
+    .from('insights_cache')
+    .select('data')
+    .eq('key', 'filter_options')
+    .single();
+
+  if (error || !data) {
+    // Fallback if cache missing
+    return getFilterMeta();
+  }
+
+  const parsed = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+  return parsed || { countries: [], years: [] };
 }

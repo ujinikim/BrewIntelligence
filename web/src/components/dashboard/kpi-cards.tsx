@@ -1,6 +1,5 @@
-import { CoffeeReview } from '@/utils/supabase-data';
-import { calculateAnalytics } from '@/utils/analytics';
-import { TrendingUp, DollarSign, Star, Coffee as CoffeeIcon, Globe, BarChart3 } from 'lucide-react';
+import { DashboardStats } from '@/utils/supabase-data';
+import { TrendingUp, MapPin, Star, Coffee } from 'lucide-react';
 
 interface MetricCardProps {
   label: string;
@@ -13,8 +12,8 @@ interface MetricCardProps {
 
 const MetricCard = ({ label, value, subtext, secondaryText, icon, variant = 'light' }: MetricCardProps) => (
   <div className={`group p-6 rounded-[2rem] border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${variant === 'dark'
-      ? 'bg-stone-900 border-white/5 text-white shadow-xl'
-      : 'bg-white border-stone-200/50 text-stone-900 shadow-sm'
+    ? 'bg-stone-900 border-white/5 text-white shadow-xl'
+    : 'bg-white border-stone-200/50 text-stone-900 shadow-sm'
     }`}>
     <div className="flex justify-between items-start mb-4">
       <div className={`p-3 rounded-xl transition-transform duration-500 group-hover:rotate-6 ${variant === 'dark' ? 'bg-white/10 text-amber-500' : 'bg-primary/10 text-primary'
@@ -38,44 +37,52 @@ const MetricCard = ({ label, value, subtext, secondaryText, icon, variant = 'lig
   </div>
 );
 
-export function KPICards({ data, totalCount }: { data: CoffeeReview[], totalCount: number }) {
-  const stats = calculateAnalytics(data);
+export function KPICards({ stats }: { stats: DashboardStats | null }) {
+  if (!stats) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Skeleton/Loading state */}
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="h-32 bg-stone-100 rounded-[2rem] animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* 1. Total Count - The most important operational metric */}
+      {/* 1. Velocity - How much data is coming in? */}
       <MetricCard
-        label="Total Reviews"
-        value={totalCount.toLocaleString()}
-        subtext="Database Size"
-        icon={<CoffeeIcon size={20} />}
+        label="New Reviews"
+        value={stats.recent_count_30d.toString()}
+        subtext="Last 30 Days"
+        icon={<TrendingUp size={20} />}
         variant="dark"
       />
 
-      {/* 2. Avg Price - High level market pulse */}
+      {/* 2. Hot Spot - Where are beans coming from recently? */}
       <MetricCard
-        label="Avg Price/oz"
-        value={stats.avgPrice === "N/A" ? "N/A" : `$${stats.avgPrice}`}
-        subtext="Market Average"
-        icon={<DollarSign size={20} />}
+        label="Trending Origin"
+        value={stats.recent_top_origin}
+        subtext="Most Active Region"
+        icon={<MapPin size={20} />}
       />
 
-      {/* 3. Global Quality - High level quality pulse */}
+      {/* 3. Recent Quality - Is the latest batch good? */}
       <MetricCard
-        label="Avg Rating"
-        value={stats.avgRating}
-        subtext="Global Quality"
+        label="Recent Quality"
+        value={stats.recent_avg_rating.toString()}
+        subtext="Avg Rating (30d)"
         icon={<Star size={20} />}
       />
 
-      {/* 4. Top Score - The current champion */}
+      {/* 4. Top Pick - The best of the recent bunch */}
       <MetricCard
-        label="Highest Rated"
-        value={stats.topRated?.rating ? stats.topRated.rating.toString() : "N/A"}
-        subtext={stats.topRated?.title ? stats.topRated.title.slice(0, 20) + '...' : "N/A"}
-        icon={<TrendingUp size={20} />}
+        label="Month's Best"
+        value={stats.recent_top_rated?.rating ? stats.recent_top_rated.rating.toString() : "-"}
+        subtext={stats.recent_top_rated?.title ? stats.recent_top_rated.title.slice(0, 15) + '...' : "No Data"}
+        icon={<Coffee size={20} />}
       />
     </div>
   );
 }
-
