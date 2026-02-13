@@ -76,14 +76,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={cn(
                       "px-4 py-2 rounded-xl text-sm font-bold tracking-tight transition-all relative overflow-hidden group",
-                      isActive 
-                        ? "text-[#1F1815] bg-stone-100/80 shadow-sm" 
+                      isActive
+                        ? "text-[#1F1815] bg-stone-100/80 shadow-sm"
                         : "text-stone-500 hover:text-[#1F1815] hover:bg-stone-100/50"
                     )}
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                        <item.icon size={16} className={cn("transition-colors", isActive ? "text-primary" : "text-stone-400 group-hover:text-primary")} />
-                        {item.label}
+                      <item.icon size={16} className={cn("transition-colors", isActive ? "text-primary" : "text-stone-400 group-hover:text-primary")} />
+                      {item.label}
                     </span>
                     {isActive && (
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-full" />
@@ -165,9 +165,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
             {/* Version Badge */}
             <div className="hidden sm:flex items-center gap-4">
-               <span className="px-3 py-1 bg-stone-100 text-stone-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-stone-200/50">
-                 Alpha v1.2.0
-               </span>
+              <span className="px-3 py-1 bg-stone-100 text-stone-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-stone-200/50">
+                Alpha v1.3.0
+              </span>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden glass border-t border-stone-200/60 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         {/* Mobile Experimental Dropdown (expands upward) */}
         {expOpen && (
-          <div 
+          <div
             ref={mobileDropdownRef}
             className="absolute bottom-full left-0 right-0 bg-white border-t border-stone-200/60 shadow-[0_-8px_30px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-2 duration-200"
           >
@@ -283,23 +283,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-24 md:pb-10">
         <div className="page-enter">
-            {children}
+          {children}
         </div>
       </main>
 
       {/* Simple Footer */}
       <footer className="relative z-10 py-12 border-t border-stone-200/50 mt-20 mb-16 md:mb-0">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-              <p className="text-xs font-bold text-stone-400 uppercase tracking-[0.4em]">
-                  The Future of Coffee Intelligence
-              </p>
-              <p className="mt-4 text-sm text-stone-500">
-                  © 2026 BrewIntelligence. Powered by AI and Specialty Passion.
-              </p>
-              <p className="mt-3 text-xs text-stone-400">
-                  Data respectfully aggregated from <a href="https://www.coffeereview.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">CoffeeReview.com</a>. All prices displayed in USD.
-              </p>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="mt-4 text-sm text-stone-500">
+            © 2026 BrewIntelligence. Powered by AI and Specialty Passion.
+          </p>
+          <p className="mt-3 text-xs text-stone-400">
+            Data respectfully aggregated from <a href="https://www.coffeereview.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">CoffeeReview.com</a>. All prices displayed in USD.
+          </p>
+        </div>
       </footer>
     </div>
   );
